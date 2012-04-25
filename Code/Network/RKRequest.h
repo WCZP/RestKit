@@ -483,7 +483,7 @@ typedef enum {
 /**
  * Sent when request has received data from remote site
  */
-- (void)request:(RKRequest*)request didReceivedData:(NSInteger)bytesReceived totalBytesReceived:(NSInteger)totalBytesReceived totalBytesExectedToReceive:(NSInteger)totalBytesExpectedToReceive;
+- (void)request:(RKRequest*)request didReceivedData:(NSInteger)bytesReceived totalBytesReceived:(NSInteger)totalBytesReceived totalBytesExectedToReceive:(long long)totalBytesExpectedToReceive;
 
 /**
  * Sent to the delegate when a request was cancelled
