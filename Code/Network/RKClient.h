@@ -28,7 +28,6 @@
 #import "RKRequestQueue.h"
 #import "RKConfigurationDelegate.h"
 
-
 /**
  RKClient exposes the low level client interface for working with HTTP servers
  and RESTful services. It wraps the request/response cycle with a clean, simple

@@ -71,7 +71,17 @@
     // Build the new URL path
     NSRange queryCharacterRange = [theResourcePath rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"?"]];
     NSString *resourcePathWithoutQueryString = (queryCharacterRange.location == NSNotFound) ? theResourcePath : [theResourcePath substringToIndex:queryCharacterRange.location];
-    NSString *baseURLPath = [[theBaseURL path] isEqualToString:@"/"] ? @"" : [[theBaseURL path] stringByStandardizingPath];
+
+    // JPMC HACK:
+    //EB: in some cases, while we are debugging using Mockey, the URL is not standard, and some characters are missing 
+    //    after stringByStandardizingPath method is sent, causing the url being changed, therefore services are not responding.
+    #ifdef DEBUG    
+        NSString *baseURLPath = [theBaseURL path];
+    #else
+        NSString *baseURLPath = [[theBaseURL path] isEqualToString:@"/"] ? @"" : [[theBaseURL path] stringByStandardizingPath];
+    #endif
+    // END JPMC HACK
+
     NSString *completePath = resourcePathWithoutQueryString ? [baseURLPath stringByAppendingString:resourcePathWithoutQueryString] : baseURLPath;
     NSString* completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
     

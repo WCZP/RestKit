@@ -479,13 +479,20 @@ static const NSTimeInterval kFlushDelay = 0.3;
     [self loadNextInQueue];
 }
 
+
 - (void)processRequestDidFailWithErrorNotification:(NSNotification *)notification {
     NSAssert([notification.object isKindOfClass:[RKRequest class]], @"Notification expected to contain an RKRequest, got a %@", NSStringFromClass([notification.object class]));
 	RKLogTrace(@"Received notification: %@", notification);
-
+    
     RKRequest* request = (RKRequest*)notification.object;
+    
+    // JPMC HACK:
+    // This is a quick workaround to fix an issue with RestKit - https://github.com/RestKit/RestKit/commit/1f98cf432e3800a48271472f5c2142fc0b925883
+    [request retain];
+    // END JPMC HACK
+    
     NSDictionary* userInfo = [notification userInfo];
-
+    
     // We failed with an error
     NSError* error = nil;
     if (userInfo) {
@@ -495,11 +502,11 @@ static const NSTimeInterval kFlushDelay = 0.3;
     } else {
         RKLogWarning(@"Received RKRequestDidFailWithErrorNotification without a userInfo, something is amiss...");
     }
-
+    
     if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
         [_delegate requestQueue:self didFailRequest:request withError:error];
     }
-
+    
     [self removeLoadingRequest:request];
     [self loadNextInQueue];
 }

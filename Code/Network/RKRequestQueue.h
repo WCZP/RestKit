@@ -179,6 +179,10 @@
  */
 - (BOOL)containsRequest:(RKRequest *)request;
 
+//JPMC HACK:
+- (BOOL)removeRequest:(RKRequest*)request;
+- (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext;
+
 
 ///-----------------------------------------------------------------------------
 /// @name Processing Queued Requests
