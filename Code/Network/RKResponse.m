@@ -254,7 +254,45 @@ return __VA_ARGS__;                                                             
 }
 
 - (NSString *)bodyAsString {
-	return [[[NSString alloc] initWithData:self.body encoding:[self bodyEncoding]] autorelease];
+    /*!
+     * Gracefully handle bad string encoding.
+     * Defects: #3639, #3311, #3504
+     * A rework of Rex's similar solution elsewhere.
+     * ~mrf
+     */
+    NSData *data = [self body];
+    
+    // attempt to parse data as string using the NSHTTPURLResponse's encoding
+    NSString *responseString = [[NSString alloc] initWithData:data encoding:[self bodyEncoding]];
+    
+    // encoding failed, try UTF8:
+    if ( ! responseString )
+    {
+        RELEASE_SAFELY(responseString);
+        responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    }
+    
+    // encoding failed, try ISOLatin
+    if ( ! responseString )
+    {
+        RELEASE_SAFELY(responseString);
+        responseString = [[NSString alloc] initWithData:data encoding:NSISOLatin1StringEncoding];        
+    }
+    
+    // encoding failed, try ASCII
+    if ( ! responseString )
+    {
+        RELEASE_SAFELY(responseString);        
+        responseString = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+    }
+    
+    if ( ! responseString )
+    {
+        return nil;
+    }
+    
+    [responseString autorelease];
+    return responseString;
 }
 
 - (id)bodyAsJSON {
